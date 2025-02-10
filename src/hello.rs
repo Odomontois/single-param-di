@@ -4,12 +4,10 @@ use auto_impl::auto_impl;
 
 use crate::{
     config::{Config, ConfigSvc},
-    di::{di, life, Life, Test},
+    di::{di, life, service, Life, Test},
 };
 
-pub(crate) trait Hello {
-    type Dep: HelloSvc;
-}
+service!(Hello, HelloSvc, HelloImpl);
 
 #[auto_impl(Arc)]
 pub(crate) trait HelloSvc {
@@ -22,10 +20,6 @@ impl HelloSvc for () {
     }
 }
 
-impl Hello for Test {
-    type Dep = ();
-}
-
 pub(crate) struct HelloImpl<M: Config> {
     config: di!(M, Config),
 }
@@ -36,11 +30,6 @@ impl<Mode: Config> HelloSvc for HelloImpl<Mode> {
         "Bonjour".to_string()
     }
 }
-
-impl Hello for Life {
-    type Dep = Arc<HelloImpl<Life>>;
-}
-
 pub(crate) fn hello_life(cfg: life!(Config)) -> HelloImpl<Life> {
     HelloImpl::<Life> { config: cfg }
 }

@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{marker::PhantomData, sync::Arc};
 
 use crate::{
     config::{Config, ConfigImpl, ConfigSvc},
@@ -28,7 +28,7 @@ impl<M: Config + Hello + World> AppSvc for AppImpl<M> {
 }
 
 pub fn app_life() -> impl AppSvc {
-    let config: Arc<_> = ConfigImpl.into();
+    let config: Arc<_> = ConfigImpl(PhantomData).into();
     let hello = hello_life(config.clone()).into();
     let world = world_life(config.clone()).into();
 

@@ -1,35 +1,25 @@
-use std::{sync::Arc, time::Duration};
+use std::{marker::PhantomData, sync::Arc, time::Duration};
 
 use auto_impl::auto_impl;
 use tokio::time::sleep;
 
-use crate::di::{Life, Test};
+use crate::di::{service, Life, Test};
 
 #[auto_impl(Arc)]
 pub(crate) trait ConfigSvc {
     async fn nonsense_wait(&self);
 }
 
-pub(crate) trait Config {
-    type Dep: ConfigSvc;
-}
+service!(Config, ConfigSvc, ConfigImpl);
 
 impl ConfigSvc for () {
     async fn nonsense_wait(&self) {}
 }
 
-impl Config for Test {
-    type Dep = ();
-}
+pub(crate) struct ConfigImpl<Mode>(pub(crate) PhantomData<Mode>);
 
-pub(crate) struct ConfigImpl;
-
-impl ConfigSvc for ConfigImpl {
+impl ConfigSvc for ConfigImpl<Life> {
     async fn nonsense_wait(&self) {
         sleep(Duration::from_secs(1)).await;
     }
-}
-
-impl Config for Life {
-    type Dep = Arc<ConfigImpl>;
 }

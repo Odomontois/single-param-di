@@ -16,3 +16,21 @@ macro_rules! di {
 }
 
 pub(crate) use di;
+
+macro_rules! service {
+    ( $t: ident, $svc: ident, $prod: ident) => {
+        pub(crate) trait $t {
+            type Dep: $svc;
+        }
+
+        impl $t for Life {
+            type Dep = Arc<$prod<Life>>;
+        }
+
+        impl $t for Test {
+            type Dep = ();
+        }
+    };
+}
+
+pub(crate) use service;

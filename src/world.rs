@@ -4,7 +4,7 @@ use auto_impl::auto_impl;
 
 use crate::{
     config::{Config, ConfigSvc},
-    di::{di, life, Life, Test},
+    di::{di, life, service, Life, Test},
 };
 
 #[auto_impl(Arc)]
@@ -12,18 +12,12 @@ pub(crate) trait WorldSvc {
     async fn world(&self) -> String;
 }
 
-pub(crate) trait World {
-    type Dep: WorldSvc;
-}
+service!(World, WorldSvc, WorldImpl);
 
 impl WorldSvc for () {
     async fn world(&self) -> String {
         "World!".to_string()
     }
-}
-
-impl World for Test {
-    type Dep = ();
 }
 
 pub(crate) struct WorldImpl<M: Config> {
@@ -35,10 +29,6 @@ impl<Mode: Config> WorldSvc for WorldImpl<Mode> {
         self.cfg.nonsense_wait().await;
         "Ebat".to_string()
     }
-}
-
-impl World for Life {
-    type Dep = Arc<WorldImpl<Life>>;
 }
 
 pub(crate) fn world_life(cfg: life!(Config)) -> WorldImpl<Life> {
