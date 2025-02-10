@@ -1,0 +1,18 @@
+
+[package]
+name = "single-param-di"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["lib"]
+name = "app"
+
+[build-dependencies]
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+auto_impl = "1.2"
+
+
+
